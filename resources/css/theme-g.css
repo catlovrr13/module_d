@@ -1,0 +1,19 @@
+.stage {
+    display: grid;
+    place-items: center;
+    height: 100vh;
+}
+
+.cube {
+    position: relative;
+    --size: clamp(440px, 90vw, 880px);
+    --half: calc(var(--size) / 2);
+    width: var(--size);
+    height: clamp(415px, 70vh, 830px);    
+}
+
+.face {
+    inset: 0;
+    position: absolute;
+    border: 2px solid grey;
+}

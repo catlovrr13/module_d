@@ -1,0 +1,12 @@
+.theme-b {
+    /* animation: left-to-right 2s linear infinite; */
+}
+
+@keyframes left-to-right {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
