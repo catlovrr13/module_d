@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { useEffect, useState } from 'react';
-// import "../../css/theme-b.css"
+import "../../css/theme-b.css"
 
 export default function ThemeB() {
     const [images, setImages] = useState([]);
@@ -44,32 +44,45 @@ export default function ThemeB() {
 
     // }, [images, current])
 
-    // useEffect(() => {
-    //     if (images.length < 2) return;
+    useEffect(() => {
+        if (images.length < 2 || mode === "Manual") return;
 
-    //     const id = setInterval(() => {
-    //         setCurrent((prev) => {
-    //             if (mode === 'Random') {
-    //                 return Math.floor(Math.random() * images.length);
-    //             }
-    //             return (prev + 1) % images.length;
-    //         });
-    //     }, 2000);
+        const id = setInterval(() => {
+            setCurrent((prev) => {
+                if (mode === 'Random') {
+                    return Math.floor(Math.random() * images.length);
+                }
+                return (prev + 1) % images.length;
+            });
+        }, 4000);
 
-    //     return () => clearInterval(id);
-    // }, [images.length, mode]);
+        return () => clearInterval(id);
+    }, [images.length, mode]);
+
+    const n = images.length;
+    const offset = n ? n - 1 - current : 0;
 
     console.log(images)
     return (
         <AppLayout>
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className={`h-210 overflow-hidden flex strip transition-transform`}>
-                    {images.map((img, i) => (
-                        <div className={`w-fit shrink-0 slide flex grow-0 basis-[100%]`} key={i}>
-                            <img src={img.content} className="w-full h-full object-cover" />
-                            <p className="bg-white text-black bottom-0 left-0">{img.name}</p>
-                        </div>
-                    ))}
+                <div className='h-210 overflow-hidden relative'
+                >
+                    <div className='flex h-full' style={{
+                        transform: `translateX(-${offset * 100}%)`,
+                        transition: 'transform 500ms ease',
+                    }}>
+                        {images.map((img, i) => (
+                            <div className='shrink-0 grow-0 basis-full h-full' key={i}>
+                                <img src={img.content} className="w-full h-full object-cover block" />
+                            </div>
+                        ))}
+                    </div>
+
+                    {images[current] && (
+                        <p key={current} className="bg-white caption text-black bottom-0 left-0 absolute" style={{animationDelay: '300ms'}}>{images[current].name}</p>
+
+                    )}
                 </div>
             </div>
         </AppLayout>

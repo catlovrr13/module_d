@@ -10,7 +10,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('config', function () {
         return Inertia::render('dashboard');
-    })->name('dashboard');
+    })->name('config');
 
     Route::get("/theme-a", function () {
         return Inertia::render('theme-a');

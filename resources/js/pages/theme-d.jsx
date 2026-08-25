@@ -27,7 +27,16 @@ export default function ThemeD() {
       }, [mode]);
   return (
     <AppLayout>
-        <div>ThemeD</div>
+        <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+                <div className="relative h-200 w-full">
+                    {images.map((img) => (
+                        <div className={`absolute inset-0`} key={img.id}>
+                            <img src={img.content} className="w-full h-full object-cover" />
+                            <p className="bg-white text-black absolute bottom-0 left-0">{img.name}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
     </AppLayout>
   )
 }
