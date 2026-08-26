@@ -1,19 +1,36 @@
 .stage {
+    height: 85vh;
     display: grid;
+    overflow: clip;
+    perspective: 700px;
     place-items: center;
-    height: 100vh;
 }
 
-.cube {
-    position: relative;
-    --size: clamp(440px, 90vw, 880px);
-    --half: calc(var(--size) / 2);
+.image {
+    --size: clamp(500px, 40vw, 1000px);
+    --half: calc(var(--size) /2);
     width: var(--size);
-    height: clamp(415px, 70vh, 830px);    
+    height: var(--half);
+    transform-style: preserve-3d;
+    transform: scale(1.3) translateX(0%);
+
+}
+.side {
+    backface-visibility: hidden;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
-.face {
-    inset: 0;
-    position: absolute;
-    border: 2px solid grey;
+.side-1 {
+    transform: translateZ(var(--half));
+}
+.side-3 {
+    transform: rotateY(180deg) translateZ(var(--half));
+}
+.side-4 {
+    transform: rotateY(90deg) translateZ(var(--half));
+}
+.side-2 {
+    transform: rotateY(-90deg) translateZ(var(--half));
 }

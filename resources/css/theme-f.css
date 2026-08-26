@@ -1,0 +1,35 @@
+.stage {
+    height: 85vh;
+    display: grid;
+    overflow: clip;
+    perspective: 500px;
+    place-items: center;
+}
+
+.image {
+    --size: clamp(500px, 40vw, 1000px);
+    width: calc(var(--size) * 2);
+    height: var(--size);
+    transform-style: preserve-3d;
+    transform: scale(2.5) translateX(0%);
+
+}
+.side {
+    backface-visibility: hidden;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.side-1 {
+    transform: translateZ(calc((var(--size) * -1) - 10px));
+}
+.side-3 {
+    transform: rotateY(180deg) translateZ(calc((var(--size) * -1) - 10px));
+}
+.side-4 {
+    transform: rotateY(90deg) translateZ(calc((var(--size) * -1) - 10px));
+}
+.side-2 {
+    transform: rotateY(-90deg) translateZ(calc((var(--size) * -1) - 10px));
+}
