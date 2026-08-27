@@ -72,16 +72,69 @@ export default function Dashboard() {
         localStorage.setItem('mode', m);
     };
 
+    const exportData = () => {
+        const data = {
+            images: JSON.parse(localStorage.getItem("images")) ?? [],
+            theme: localStorage.getItem("theme") ?? "A"
+        }
+
+        const json = JSON.stringify(data)
+        const blob = new Blob([json], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+
+        const now = new Date()
+        const timeStamp = now.toISOString().replaceAll(":", "").replaceAll(".", "");
+        const filename = `slideshow-${timeStamp}`
+
+        const a = document.createElement('a');
+        a.href = url
+        a.download = filename
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
+    const importData = (e) => {
+        const file = e.target.files[0]
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload =() => {
+            const data = JSON.parse(reader.result);
+            setImages(data.images)
+            localStorage.setItem("images", JSON.stringify(data.images))
+            localStorage.setItem("theme", data.theme)
+        }
+
+        reader.readAsText(file)
+        e.target.value = ''
+    }
+
+    const resetData = () => {
+        setImages([]),
+        localStorage.clear()
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Configuration Panel" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div>
+                    <button className='border border-gray-300 px-2 py-1' onClick={exportData}>Export Data</button>
+                    <label className='border border-gray-300 px-2 py-1'>Import Data
+                        <input type="file" accept='
+                        application/json' onChange={importData} className='hidden' />
+                    </label>
+                    <button className='border border-gray-300 px-2 py-1' onClick={resetData}>Reset Data</button>
+                </div>
+
+                <div>
+                    <p>Play Mode</p>
                     {modes.map((m) => (
                         <button
                             value={m}
+                            key={m}
                             onClick={() => changeMode(m)}
-                            className={`border border-gray-400 px-3 ${m == mode ? 'bg-pink-300 text-black' : ''}`}
+                            className={`border border-gray-400 px-3 py-1 ${m == mode ? 'bg-pink-300 text-black' : ''}`}
                         >
                             {m}
                         </button>
