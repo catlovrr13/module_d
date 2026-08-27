@@ -46,9 +46,9 @@ export default function ThemeA() {
     return (
         <AppLayout>
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="relative h-200 w-full">
-                    {images.map((img) => (
-                        <div className={`absolute inset-0 ${img.id == current ? 'z-100' : 'z-0 opacity-0'}`} key={img.id}>
+                <div className="relative h-180 w-full">
+                    {images.map((img, i) => (
+                        <div className={`absolute inset-0 ${i == current ? 'z-100' : 'z-0 opacity-0'}`} key={i}>
                             <img src={img.content} className="h-full w-full object-cover" />
                             <p className="absolute bottom-0 left-0 bg-white text-black">{img.name}</p>
                         </div>

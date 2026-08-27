@@ -2,8 +2,6 @@ import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
-import { Reorder, useDragControls } from 'motion/react';
-
 const breadcrumbs = [
     {
         title: 'Configuration Panel',
@@ -13,7 +11,6 @@ const breadcrumbs = [
 
 const modes = ['Manual', 'AutoPlay', 'Random'];
 export default function Dashboard() {
-    const controls = useDragControls();
     const [images, setImages] = useState([]);
     const [mode, setMode] = useState('Autoplay');
 
@@ -29,7 +26,7 @@ export default function Dashboard() {
     };
 
     const handleImage = (files) => {
-        const newEntries = []
+        const newEntries = [];
         let done = 0;
         for (let i = 0; i < files.length; i++) {
             const reader = new FileReader();
@@ -135,7 +132,43 @@ export default function Dashboard() {
         });
 
         dropzone.addEventListener('drop', (e) => {
-            if (e.dataTransfer?.files?.length) handleImage(e.dataTransfer.files);
+            if (e.dataTransfer?.files?.length) {
+                handleImage(e.dataTransfer.files);
+            }
+        });
+
+        const stage = document.getElementById('stage');
+        // let dragged = document.getElementById("card")
+
+        let dragged = null;
+
+        stage.addEventListener('dragstart', (e) => {
+            dragged = e.target.closest('.card');
+            dragged.classList.add('is-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        const findTarget = (x) => {
+            const cards = [...stage.querySelectorAll('.card:not(.is-dragging)')];
+
+            const target = cards.find((el) => {
+                const b = el.getBoundingClientRect();
+                return x < b.left + b.width / 2;
+            });
+            return target || null;
+        };
+
+        stage.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const target = findTarget(e.clientX);
+            if (target === dragged.nextElementSibling) return;
+            stage.insertBefore(dragged, target);
+        });
+
+        stage.addEventListener('dragend', () => {
+            dragged.classList.remove('is-dragging');
+            dragged = null;
+            save();
         });
     }, []);
 
@@ -145,7 +178,7 @@ export default function Dashboard() {
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="fileUpload">
                     <button type="button" className="dropzone border border-gray-300 px-3 py-2" id="dropzone">
-                        Upload Images Here !
+                        Drag and Drop Images Here
                         <input type="file" id="fileInput" multiple className="absolute h-[1px] w-[1px] overflow-hidden opacity-0" />
                     </button>
                 </div>
@@ -182,20 +215,14 @@ export default function Dashboard() {
                         </button>
                     ))}
                 </div>
-                {/* <div className="">
-                    <h1>Upload Images here</h1>
-                    <FileUploader required multiple name="Upload images here" handleChange={handleImage} types={['png', 'jpg', 'jpeg']} />
-                </div> */}
 
-                <Reorder.Group values={images} onReorder={setImages} axis="xy" as="ul">
+                <div className="stage flex" id="stage">
                     {images.map((i, id) => (
-                        <Reorder.Item key={id} value={i} dragListener={true}>
-                            {/* <div className="m-2 flex flex-col items-center justify-center" onPointerDown={(e) => controls.start(e)}> */}
-                            <img src={i.content} width={300} className="border border-gray-300" onPointerDown={(e) => controls.start(e)} />
-                            {/* </div>   */}
-                        </Reorder.Item>
+                        <div className="card m-2 flex items-center justify-center" draggable={true}>
+                            <img src={i.content} width={300} className="border border-gray-300" />
+                        </div>
                     ))}
-                </Reorder.Group>
+                </div>
             </div>
         </AppLayout>
     );
