@@ -1,7 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { FileUploader } from 'react-drag-drop-files';
 
 import { Reorder, useDragControls } from 'motion/react';
 
@@ -30,19 +29,19 @@ export default function Dashboard() {
     };
 
     const handleImage = (files) => {
-        const temp = [...images];
+        const newEntries = []
         let done = 0;
         for (let i = 0; i < files.length; i++) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                temp.push({
-                    id: i + 1,
+                newEntries.push({
+                    id: Date.now() + 1,
                     name: handleFileName(files[i].name),
                     content: reader.result,
                 });
                 done += 1;
                 if (done == files.length) {
-                    setImages(temp);
+                    setImages((prev) => [...prev, ...newEntries]);
                 }
             };
             reader.readAsDataURL(files[i]);
@@ -74,57 +73,100 @@ export default function Dashboard() {
 
     const exportData = () => {
         const data = {
-            images: JSON.parse(localStorage.getItem("images")) ?? [],
-            theme: localStorage.getItem("theme") ?? "A"
-        }
+            images: JSON.parse(localStorage.getItem('images')) ?? [],
+            theme: localStorage.getItem('theme') ?? 'A',
+        };
 
-        const json = JSON.stringify(data)
-        const blob = new Blob([json], { type: "application/json" })
-        const url = URL.createObjectURL(blob)
+        const json = JSON.stringify(data);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
 
-        const now = new Date()
-        const timeStamp = now.toISOString().replaceAll(":", "").replaceAll(".", "");
-        const filename = `slideshow-${timeStamp}`
+        const now = new Date();
+        const timeStamp = now.toISOString().replaceAll(':', '').replaceAll('.', '');
+        const filename = `slideshow-${timeStamp}`;
 
         const a = document.createElement('a');
-        a.href = url
-        a.download = filename
-        a.click()
-        URL.revokeObjectURL(url)
-    }
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     const importData = (e) => {
-        const file = e.target.files[0]
+        const file = e.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload =() => {
+        reader.onload = () => {
             const data = JSON.parse(reader.result);
-            setImages(data.images)
-            localStorage.setItem("images", JSON.stringify(data.images))
-            localStorage.setItem("theme", data.theme)
-        }
+            setImages(data.images);
+            localStorage.setItem('images', JSON.stringify(data.images));
+            localStorage.setItem('theme', data.theme);
+        };
 
-        reader.readAsText(file)
-        e.target.value = ''
-    }
+        reader.readAsText(file);
+        e.target.value = '';
+    };
 
     const resetData = () => {
-        setImages([]),
-        localStorage.clear()
-    }
+        setImages([]), localStorage.clear();
+    };
+
+    useEffect(() => {
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropzone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', () => {
+            handleImage(fileInput.files);
+            fileInput.value = '';
+        });
+
+        const dragEvents = ['dragenter', 'dragleave', 'drop', 'dragover'];
+        dragEvents.forEach((evt) => {
+            dropzone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            document.addEventListener(evt, (e) => e.preventDefault());
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            if (e.dataTransfer?.files?.length) handleImage(e.dataTransfer.files);
+        });
+    }, []);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Configuration Panel" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div>
-                    <button className='border border-gray-300 px-2 py-1' onClick={exportData}>Export Data</button>
-                    <label className='border border-gray-300 px-2 py-1'>Import Data
-                        <input type="file" accept='
-                        application/json' onChange={importData} className='hidden' />
+                <div className="fileUpload">
+                    <button type="button" className="dropzone border border-gray-300 px-3 py-2" id="dropzone">
+                        Upload Images Here !
+                        <input type="file" id="fileInput" multiple className="absolute h-[1px] w-[1px] overflow-hidden opacity-0" />
+                    </button>
+                </div>
+
+                <div className="flex gap-2">
+                    <button className="border border-gray-300 px-2 py-1" onClick={exportData}>
+                        Export Data
+                    </button>
+                    <label className="border border-gray-300 px-2 py-1">
+                        Import Data
+                        <input
+                            type="file"
+                            accept="
+                        application/json"
+                            onChange={importData}
+                            className="hidden"
+                        />
                     </label>
-                    <button className='border border-gray-300 px-2 py-1' onClick={resetData}>Reset Data</button>
+                    <button className="border border-gray-300 px-2 py-1" onClick={resetData}>
+                        Reset Data
+                    </button>
                 </div>
 
                 <div>
@@ -140,10 +182,10 @@ export default function Dashboard() {
                         </button>
                     ))}
                 </div>
-                <div className="">
+                {/* <div className="">
                     <h1>Upload Images here</h1>
                     <FileUploader required multiple name="Upload images here" handleChange={handleImage} types={['png', 'jpg', 'jpeg']} />
-                </div>
+                </div> */}
 
                 <Reorder.Group values={images} onReorder={setImages} axis="xy" as="ul">
                     {images.map((i, id) => (

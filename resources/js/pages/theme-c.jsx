@@ -22,8 +22,13 @@ export default function ThemeC() {
     }, [images]);
 
     useEffect(() => {
-        localStorage.setItem('mode', mode);
+        if (localStorage.getItem('mode')) {
+            setMode(localStorage.getItem('mode'));
+        } else {
+            localStorage.setItem('mode', mode);
+        }
     }, [mode]);
+
 
     useEffect(() => {
         if (images.length < 2 || mode === "Manual") return;

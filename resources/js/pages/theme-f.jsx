@@ -19,8 +19,6 @@ export default function ThemeB() {
             localStorage.setItem('images', JSON.stringify(images));
         }
 
-        let currentIndex = 0;
-
         if(images.length){
             const tempSides = [...sides]
             for(let i = 0 ; i < 4; i++){
@@ -29,8 +27,6 @@ export default function ThemeB() {
             setSides(tempSides)
 
         }
-
-
         let rotation = 90
         for (let i = 0; i < images.length - 1; i++) {
             setTimeout(() => {

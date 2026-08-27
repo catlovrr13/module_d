@@ -22,27 +22,13 @@ export default function ThemeB() {
     }, [images]);
 
     useEffect(() => {
-        localStorage.setItem('mode', mode);
+        if (localStorage.getItem('mode')) {
+            setMode(localStorage.getItem('mode'));
+        } else {
+            localStorage.setItem('mode', mode);
+        }
     }, [mode]);
 
-    // useEffect(() => {
-    //   const id = setInterval(() => {
-    //     const cur = images[current]
-    //     console.log(current)
-    //     const next = current + 1 >= images.length ? images[0] : images[current + 1] 
-    //     setSlide([cur, next])
-    //     setTimeout(() => {
-    //       setCurrent(current + 1 >= images.length ? 0 : current + 1)
-    //       document.getElementById("slide-0").style.right = 0;
-    //     }, 2000)
-
-    //   }, 2000)
-
-    //   return () => {
-    //     clearInterval(id)
-    //   }
-
-    // }, [images, current])
 
     useEffect(() => {
         if (images.length < 2 || mode === "Manual") return;
